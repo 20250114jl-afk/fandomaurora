@@ -1,0 +1,131 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Master Gate: Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- REUSABLE PRIMITIVES ---
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    
+    // Admin check (User from runtime metadata or validated via database role)
+    function isAdmin() { 
+      return isSignedIn() && (
+        request.auth.uid == '1pUKN99SP8T2aahZpKksdNFGKS83' ||
+        request.auth.token.email == 'new2020.jeonil@gmail.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Admin')
+      ); 
+    }
+
+    // --- ENTITY VALIDATIONS ---
+    
+    function isValidUserCreate(data) {
+      return data.keys().hasAll(['userId', 'email', 'displayName', 'tier', 'role', 'referredByEmail', 'ancestors', 'phoneNumber', 'createdAt']) &&
+             data.keys().size() >= 9 && data.keys().size() <= 13 &&
+             data.userId == request.auth.uid &&
+             data.email is string && data.email.size() <= 200 &&
+             data.displayName is string && data.displayName.size() <= 100 &&
+             data.tier in ['Basic', 'Gold', 'Legend Tier'] &&
+             data.role in ['User', 'Sales', 'Admin'] &&
+             data.referredByEmail is string &&
+             data.ancestors is list &&
+             data.phoneNumber is string;
+    }
+
+    function isValidUserUpdate(data, existingData) {
+      return data.keys().hasAll(['userId', 'email', 'displayName', 'tier', 'role', 'referredByEmail', 'ancestors', 'phoneNumber', 'createdAt']) &&
+             data.keys().size() >= 9 && data.keys().size() <= 13 &&
+             data.userId == existingData.userId &&
+             data.email == existingData.email &&
+             data.displayName is string && data.displayName.size() <= 100 &&
+             data.tier in ['Basic', 'Gold', 'Legend Tier'] &&
+             data.role in ['User', 'Sales', 'Admin'] &&
+             data.referredByEmail is string &&
+             data.ancestors is list &&
+             data.phoneNumber is string;
+    }
+
+    function isValidNotification(data) {
+      return data.keys().hasAll(['userId', 'phoneNumber', 'eventTitle', 'eventDate', 'createdAt']) &&
+             data.keys().size() == 5 &&
+             data.userId == request.auth.uid &&
+             data.phoneNumber is string && data.phoneNumber.size() <= 20 &&
+             data.eventTitle is string && data.eventTitle.size() <= 200 &&
+             data.eventDate is timestamp &&
+             data.createdAt == request.time;
+    }
+
+    function isValidCardApplication(data) {
+      return data.keys().hasAll(['userId', 'email', 'displayName', 'cardName', 'address', 'detailAddress', 'phoneNumber', 'cardColor', 'status', 'createdAt', 'updatedAt']) &&
+             data.keys().size() == 11 &&
+             data.userId == request.auth.uid &&
+             data.email is string && data.email.size() <= 200 &&
+             data.displayName is string && data.displayName.size() <= 100 &&
+             data.cardName is string && data.cardName.size() <= 100 &&
+             data.address is string && data.address.size() <= 300 &&
+             data.detailAddress is string && data.detailAddress.size() <= 300 &&
+             data.phoneNumber is string && data.phoneNumber.size() <= 30 &&
+             data.cardColor is string && data.cardColor.size() <= 50 &&
+             data.status in ['pending', 'approved', 'rejected'] &&
+             data.createdAt == request.time &&
+             data.updatedAt == request.time;
+    }
+
+    function isValidCardApplicationUpdate(data, existingData) {
+      return data.keys().hasAll(['userId', 'email', 'displayName', 'cardName', 'address', 'detailAddress', 'phoneNumber', 'cardColor', 'status', 'createdAt', 'updatedAt']) &&
+             data.keys().size() == 11 &&
+             data.userId == existingData.userId &&
+             data.email == existingData.email &&
+             data.cardColor == existingData.cardColor &&
+             data.createdAt == existingData.createdAt &&
+             data.updatedAt == request.time;
+    }
+
+    // --- COLLECTION RULES ---
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow create: if (isSignedIn() && isValidId(userId) && isValidUserCreate(incoming())) || isAdmin();
+      allow update: if isAdmin() || (
+                      isOwner(userId) && 
+                      isValidUserUpdate(incoming(), existing()) && 
+                      incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'phoneNumber', 'selectedFanId', 'selectedFanName', 'selectedFanPhotoUrl', 'selectedFanUpdatedAt'])
+                    );
+      allow list: if isSignedIn();
+    }
+
+    match /notifications/{notificationId} {
+      allow get: if isOwner(existing().userId) || isAdmin();
+      allow create: if isSignedIn() && isValidId(notificationId) && isValidNotification(incoming());
+      allow delete: if isOwner(existing().userId) || isAdmin();
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    match /cardApplications/{applicationId} {
+      allow get: if isSignedIn() && (isOwner(existing().userId) || isAdmin());
+      allow create: if isSignedIn() && isValidId(applicationId) && isValidCardApplication(incoming());
+      allow update: if isAdmin() || (
+                      isSignedIn() && isOwner(existing().userId) &&
+                      isValidCardApplicationUpdate(incoming(), existing()) &&
+                      incoming().diff(existing()).affectedKeys().hasOnly(['cardName', 'address', 'detailAddress', 'phoneNumber', 'status', 'updatedAt'])
+                    );
+      allow list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /cardDesigns/{designId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

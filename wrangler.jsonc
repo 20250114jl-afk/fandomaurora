@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "fandom-aurora-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-01-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "9123662fdd9f4c2f9a2038129544089b",
+      "localConnectionString": "postgresql://user:password@localhost:5432/databasename"
+    }
+  ],
+  "placement": {
+    "region": "aws:us-east-1"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Fandom Aurora",
+  "description": "Premium K-POP fandom culture card landing page offering exclusive benefits including dinner shows, festivals, and luxury cruises.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

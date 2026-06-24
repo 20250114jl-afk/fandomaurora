@@ -1,0 +1,99 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Premium member profile containing fandom tier and account status.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The unique ID of the user (from Firebase Auth)." },
+        "email": { "type": "string", "description": "The user's email address." },
+        "displayName": { "type": "string", "description": "The user's full name." },
+        "tier": { "type": "string", "description": "The fandom membership tier (e.g., Legend Tier).", "enum": ["Basic", "Gold", "Legend Tier"] },
+        "role": { "type": "string", "description": "The system role of the user.", "enum": ["User", "Sales", "Admin"] },
+        "referredByEmail": { "type": "string", "description": "Email of the sales member who recruited this user." },
+        "ancestors": { "type": "array", "description": "Emails of all sales recruiters in the downline ancestry path." },
+        "phoneNumber": { "type": "string", "description": "User's contact number for notifications." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the member joined." }
+      },
+      "required": ["userId", "email", "displayName", "tier", "role", "referredByEmail", "ancestors", "createdAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "Event reminder subscription for SMS alerts.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The owner of this notification." },
+        "phoneNumber": { "type": "string", "description": "Target phone number for SMS." },
+        "eventTitle": { "type": "string", "description": "Title of the Koyote event." },
+        "eventDate": { "type": "string", "format": "date-time", "description": "Scheduled time of the event." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Subscription timestamp." }
+      },
+      "required": ["userId", "phoneNumber", "eventTitle", "eventDate", "createdAt"]
+    },
+    "CardApplication": {
+      "title": "CardApplication",
+      "description": "Request form for issuing membership cards.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner requesting the card." },
+        "email": { "type": "string", "description": "Requestor's email." },
+        "displayName": { "type": "string", "description": "Real name printed on card." },
+        "cardName": { "type": "string", "description": "Custom spelling of the name to engrave on card." },
+        "address": { "type": "string", "description": "Delivery address." },
+        "detailAddress": { "type": "string", "description": "Detailed delivery address." },
+        "phoneNumber": { "type": "string", "description": "Phone number for delivery notices." },
+        "cardColor": { "type": "string", "description": "Design choice (ID of the dynamic CardDesign)." },
+        "status": { "type": "string", "description": "Current state of request.", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Writen timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Updated timestamp." }
+      },
+      "required": ["userId", "email", "displayName", "cardName", "address", "detailAddress", "phoneNumber", "cardColor", "status", "createdAt", "updatedAt"]
+    },
+    "CardDesign": {
+      "title": "CardDesign",
+      "description": "Custom administrator-defined physical card templates.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique card identifier string." },
+        "name": { "type": "string", "description": "Card template display name." },
+        "imageUrl": { "type": "string", "description": "High resolution card background plate image URL." },
+        "textColor": { "type": "string", "description": "Tailwind text styling class or hex value (e.g. text-white, text-amber-300)" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp." }
+      },
+      "required": ["id", "name", "imageUrl", "textColor", "createdAt"]
+    },
+    "SiteConfig": {
+      "title": "SiteConfig",
+      "description": "Dynamic content settings for the landing page.",
+      "type": "object",
+      "properties": {
+        "heroTitle": { "type": "string" },
+        "heroSubtitle": { "type": "string" },
+        "membershipFee": { "type": "string" },
+        "benefits": { "type": "array" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile storage."
+    },
+    "/notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "SMS notification queue."
+    },
+    "/cardApplications/{applicationId}": {
+      "schema": "CardApplication",
+      "description": "Card issuance request forms."
+    },
+    "/cardDesigns/{designId}": {
+      "schema": "CardDesign",
+      "description": "Administrator managed physical card design templates."
+    },
+    "/settings/{settingId}": {
+      "schema": "SiteConfig",
+      "description": "Global app settings."
+    }
+  }
+}

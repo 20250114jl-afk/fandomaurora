@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-[#030712] text-slate-100 antialiased selection:bg-blue-500/30 overflow-x-hidden;
+    background-image: radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.45) 0%, transparent 60%),
+                      radial-gradient(circle at 15% 45%, rgba(13, 148, 136, 0.18) 0%, transparent 50%),
+                      radial-gradient(circle at 85% 75%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                      radial-gradient(circle at 35% 85%, rgba(168, 85, 247, 0.12) 0%, transparent 40%);
+    background-size: 200% 200%;
+    background-attachment: fixed;
+    animation: aurora-boreal 25s ease infinite;
+  }
+}
+
+@keyframes aurora-boreal {
+  0% {
+    background-position: 0% 20%;
+  }
+  50% {
+    background-position: 100% 80%;
+  }
+  100% {
+    background-position: 0% 20%;
+  }
+}
+
+@layer utilities {
+  /* 3D Tactile Neon Button */
+  .btn-neon-3d-blue {
+    @apply relative px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm uppercase tracking-widest rounded-2xl transition-all duration-200 transform active:translate-y-0.5 select-none text-center;
+    box-shadow: 0 4px 0 0 #1e3a8a, 0 8px 20px 0 rgba(59, 130, 246, 0.4);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  .btn-neon-3d-blue:active {
+    box-shadow: 0 2px 0 0 #1e3a8a, 0 4px 10px 0 rgba(59, 130, 246, 0.4);
+  }
+
+  .btn-neon-3d-gold {
+    @apply relative px-8 py-4 bg-gradient-to-r from-[#D4AF37] via-[#F5D88D] to-[#9C6B1B] text-[#1a1105] font-black text-sm uppercase tracking-widest rounded-2xl transition-all duration-200 transform active:translate-y-0.5 select-none text-center;
+    box-shadow: 0 4px 0 0 #78350f, 0 8px 20px 0 rgba(212, 175, 55, 0.35);
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+  .btn-neon-3d-gold:active {
+    box-shadow: 0 2px 0 0 #78350f, 0 4px 10px 0 rgba(212, 175, 55, 0.35);
+  }
+
+  .btn-neon-3d-purple {
+    @apply relative px-8 py-4 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white font-black text-sm uppercase tracking-widest rounded-2xl transition-all duration-200 transform active:translate-y-0.5 select-none text-center;
+    box-shadow: 0 4px 0 0 #581c87, 0 8px 20px 0 rgba(168, 85, 247, 0.4);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  .btn-neon-3d-purple:active {
+    box-shadow: 0 2px 0 0 #581c87, 0 4px 10px 0 rgba(168, 85, 247, 0.4);
+  }
+
+  /* Glowing Neon Lines */
+  .neon-line-blue {
+    @apply h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent w-full;
+    box-shadow: 0 0 12px #3b82f6, 0 0 4px #60a5fa;
+  }
+  
+  .neon-line-purple {
+    @apply h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent w-full;
+    box-shadow: 0 0 12px #a855f7, 0 0 4px #c084fc;
+  }
+
+  .neon-line-gold {
+    @apply h-[2px] bg-gradient-to-r from-transparent via-[#e9c168] to-transparent w-full;
+    box-shadow: 0 0 12px #d4af37, 0 0 4px #f5d88d;
+  }
+
+  /* Neon Border Cards */
+  .neon-card-blue {
+    @apply bg-slate-950/80 backdrop-blur-md border border-blue-500/30 rounded-3xl p-6 md:p-8 transition-all hover:border-blue-400/60;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7), 0 0 15px 0 rgba(59, 130, 246, 0.1);
+  }
+
+  .neon-card-purple {
+    @apply bg-slate-950/80 backdrop-blur-md border border-purple-500/30 rounded-3xl p-6 md:p-8 transition-all hover:border-purple-400/60;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7), 0 0 15px 0 rgba(168, 85, 247, 0.1);
+  }
+
+  .neon-card-gold {
+    @apply bg-slate-950/80 backdrop-blur-md border border-[#d4af37]/30 rounded-3xl p-6 md:p-8 transition-all hover:border-[#d4af37]/60;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7), 0 0 15px 0 rgba(212, 175, 55, 0.15);
+  }
+
+  .brand-bg {
+    @apply relative overflow-hidden;
+    background: linear-gradient(135deg, #0b1528 0%, #030712 100%);
+  }
+
+  .brand-bg::before {
+    content: "";
+    @apply absolute top-0 left-0 right-0 bottom-0 pointer-events-none;
+    background-image: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
+    z-index: 0;
+  }
+
+  @keyframes aurora-drift {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    100% { transform: translate(10%, 10%) scale(1.2) rotate(10deg); }
+  }
+
+  .glass-card-light {
+    @apply bg-slate-900/85 backdrop-blur-md border border-slate-800 rounded-3xl shadow-2xl;
+  }
+
+  .glass-card-dark {
+    @apply bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-3xl shadow-2xl text-white;
+  }
+
+  .text-gradient-blue {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-cyan-200;
+  }
+
+  .btn-primary-blue {
+    @apply px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black rounded-full shadow-lg transition-all active:scale-95;
+  }
+
+  @keyframes shine {
+    from { left: -100%; }
+    to { left: 200%; }
+  }
+}
